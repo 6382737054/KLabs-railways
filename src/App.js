@@ -7,10 +7,12 @@ import Home from './pages/Home';
 import Form1 from './pages/Form1';
 import Form2 from './pages/Form2';
 import Form3 from './pages/Form3';
+import Navbar from './pages/Navbar';
 
 function App() {
   return (
     <Router>
+      <Navbar /> {/* Add Navbar here */}
       <Routes>
         {/* Login, Create Account, and Forgot Password Routes */}
         <Route path="/" element={<Login />} />

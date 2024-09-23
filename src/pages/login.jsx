@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { FaUser, FaLock } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+// Importing Firebase v9+ methods
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'; 
+import { auth } from '../firebase'; // Make sure your firebase config is correct
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -9,7 +12,7 @@ function Login() {
   const [passwordError, setPasswordError] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Email validation regex
@@ -19,13 +22,18 @@ function Login() {
     setEmailError(!isEmailValid);
     setPasswordError(!isPasswordValid);
 
-    // If both fields are valid, navigate to the home page
     if (isEmailValid && isPasswordValid) {
-      console.log('Form is valid! Submitting...', { email, password });
-      // Here you can implement actual authentication logic
+      try {
+        // Sign in using Firebase Authentication
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        console.log('Login successful:', userCredential.user);
 
-      // Redirect to home page on successful login
-      navigate('/home');
+        // Navigate to home page after successful login
+        navigate('/home');
+      } catch (error) {
+        console.error('Login error:', error.message);
+        alert('Login failed: ' + error.message);
+      }
     }
   };
 
