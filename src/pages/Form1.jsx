@@ -56,24 +56,39 @@ function Form1() {
     // Add form data
     doc.setFontSize(12);
     let y = 30; // Starting Y position
-    for (const [key, value] of Object.entries(formData)) {
-      const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
-      doc.text(`${formattedKey}: ${value ? value : 'N/A'}`, 20, y);
-      y += 10; // Increase Y position for the next line
-    }
 
-    // Add images to PDF
-    const addImageToPDF = (imageData, yPosition, label) => {
-      if (imageData) {
-        doc.addImage(imageData, 'JPEG', 20, yPosition, 40, 40); // Adjust size as necessary
-        yPosition += 50; // Increase Y position after adding image
+    // Add each form field with respective image if applicable
+    const addTextAndImage = (label, value, image) => {
+      doc.text(`${label}: ${value ? value : 'N/A'}`, 20, y);
+      y += 10; // Increase Y position for the next line
+
+      if (image) {
+        doc.addImage(image, 'JPEG', 20, y, 40, 40); // Adjust image size as needed
+        y += 50; // Increase Y position after adding image
       }
-      return yPosition;
     };
 
-    y = addImageToPDF(imageData.aadharFile, y, 'Aadhar File');
-    y = addImageToPDF(imageData.pensionOrderFile, y, 'Pension Order File');
-    y = addImageToPDF(imageData.recentPhotoFile, y, 'Recent Photo');
+    // Add each field and image in respective order
+    addTextAndImage('Name of Freedom Fighter', formData.name);
+    addTextAndImage('Name of Spouse', formData.spouseName);
+    addTextAndImage('Date of Birth', formData.dob);
+    addTextAndImage('Residential Address', formData.address);
+    addTextAndImage('Freedom Fighter Pass Card No', formData.passCardNo);
+    addTextAndImage('Previous Renewal Date', formData.renewalDate);
+    addTextAndImage('Validity to be Extended To', formData.validityExtendedTo);
+    addTextAndImage('Pension Pay Order Number', formData.pensionPayOrderNo);
+
+    // Add Aadhar File
+    addTextAndImage('Aadhar File', formData.aadharFile?.name, imageData.aadharFile);
+
+    // Add Bank Details for Pension Payment
+    addTextAndImage('Bank Details for Pension Payment', formData.bankDetails);
+
+    // Add Pension Order File
+    addTextAndImage('Pension Order File', formData.pensionOrderFile?.name, imageData.pensionOrderFile);
+
+    // Add Recent Passport Photo
+    addTextAndImage('Recent Passport Photo', formData.recentPhotoFile?.name, imageData.recentPhotoFile);
 
     // Save the PDF
     doc.save('freedom_fighters_pension_form.pdf');
@@ -86,7 +101,9 @@ function Form1() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name of Freedom Fighter */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2" htmlFor="name">Name of Freedom Fighter (in block letters)</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="name">
+              Name of Freedom Fighter (in block letters)
+            </label>
             <input
               type="text"
               id="name"
@@ -100,7 +117,9 @@ function Form1() {
 
           {/* Name of Spouse */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2" htmlFor="spouseName">Name of Spouse</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="spouseName">
+              Name of Spouse
+            </label>
             <input
               type="text"
               id="spouseName"
@@ -113,7 +132,9 @@ function Form1() {
 
           {/* Date of Birth */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2" htmlFor="dob">Date of Birth</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="dob">
+              Date of Birth
+            </label>
             <input
               type="date"
               id="dob"
@@ -127,7 +148,9 @@ function Form1() {
 
           {/* Residential Address */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2" htmlFor="address">Residential Address</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="address">
+              Residential Address
+            </label>
             <textarea
               id="address"
               name="address"
@@ -140,7 +163,9 @@ function Form1() {
 
           {/* Freedom Fighter Pass Card No */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2" htmlFor="passCardNo">Freedom Fighter Pass Card No</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="passCardNo">
+              Freedom Fighter Pass Card No
+            </label>
             <input
               type="text"
               id="passCardNo"
@@ -154,7 +179,9 @@ function Form1() {
 
           {/* Previous Renewal Date */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2" htmlFor="renewalDate">Previous Renewal Date</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="renewalDate">
+              Previous Renewal Date
+            </label>
             <input
               type="date"
               id="renewalDate"
@@ -167,7 +194,9 @@ function Form1() {
 
           {/* Validity to be Extended To */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2" htmlFor="validityExtendedTo">Validity to be Extended To</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="validityExtendedTo">
+              Validity to be Extended To
+            </label>
             <input
               type="date"
               id="validityExtendedTo"
@@ -180,7 +209,9 @@ function Form1() {
 
           {/* Pension Pay Order Number */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2" htmlFor="pensionPayOrderNo">Pension Pay Order Number</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="pensionPayOrderNo">
+              Pension Pay Order Number
+            </label>
             <input
               type="text"
               id="pensionPayOrderNo"
@@ -193,7 +224,9 @@ function Form1() {
 
           {/* Upload Aadhar of Freedom Fighter/Spouse */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2" htmlFor="aadharFile">Upload Aadhar of Freedom Fighter/Spouse</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="aadharFile">
+              Upload Aadhar of Freedom Fighter/Spouse
+            </label>
             <input
               type="file"
               id="aadharFile"
@@ -205,7 +238,9 @@ function Form1() {
 
           {/* Bank Details for Pension Payment */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2" htmlFor="bankDetails">Bank Details for Pension Payment (with address)</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="bankDetails">
+              Bank Details for Pension Payment (with address)
+            </label>
             <textarea
               id="bankDetails"
               name="bankDetails"
@@ -217,7 +252,9 @@ function Form1() {
 
           {/* Upload Attested Photocopy of Pension Order */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2" htmlFor="pensionOrderFile">Upload Attested Photocopy of Pension Order</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="pensionOrderFile">
+              Upload Attested Photocopy of Pension Order
+            </label>
             <input
               type="file"
               id="pensionOrderFile"
@@ -227,9 +264,11 @@ function Form1() {
             />
           </div>
 
-          {/* Upload Recent Passport Photo of Spouse/Freedom Fighter */}
+          {/* Upload Recent Passport Size Photograph */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2" htmlFor="recentPhotoFile">Upload Recent Passport Photo of Spouse/Freedom Fighter</label>
+            <label className="block text-gray-700 font-medium mb-2" htmlFor="recentPhotoFile">
+              Upload Recent Passport Size Photograph
+            </label>
             <input
               type="file"
               id="recentPhotoFile"
@@ -239,11 +278,8 @@ function Form1() {
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-200"
-          >
-            Submit
+          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md">
+            Submit Form
           </button>
         </form>
       </div>
