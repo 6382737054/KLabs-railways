@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 function CreateAccount() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState(''); // New state for confirm password
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -14,6 +15,12 @@ function CreateAccount() {
     e.preventDefault();
     setError(''); // Reset error message
     setLoading(true); // Show loading indicator during API request
+
+    if (password !== confirmPassword) {
+      setError("Passwords don't match"); // Display error if passwords do not match
+      setLoading(false);
+      return;
+    }
 
     try {
       // Create a new user with the provided email and password
@@ -50,6 +57,7 @@ function CreateAccount() {
               required
             />
           </div>
+          
           {/* Password Input */}
           <div className="relative">
             <label className="block text-gray-700 font-medium mb-1" htmlFor="new-password">Password</label>
@@ -63,6 +71,21 @@ function CreateAccount() {
               required
             />
           </div>
+
+          {/* Confirm Password Input */}
+          <div className="relative">
+            <label className="block text-gray-700 font-medium mb-1" htmlFor="confirm-password">Confirm Password</label>
+            <input
+              type="password"
+              id="confirm-password"
+              placeholder="Confirm your password"
+              className="w-full border border-gray-300 rounded-md px-3 py-2"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)} // Update confirmPassword state on input change
+              required
+            />
+          </div>
+
           {/* Create Account Button */}
           <button
             type="submit"
