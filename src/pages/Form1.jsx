@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { jsPDF } from 'jspdf';
 
 function Form1() {
   const [formData, setFormData] = useState({
@@ -16,18 +17,66 @@ function Form1() {
     recentPhotoFile: null,
   });
 
+  const [imageData, setImageData] = useState({
+    aadharFile: '',
+    pensionOrderFile: '',
+    recentPhotoFile: '',
+  });
+
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
     setFormData({
       ...formData,
       [name]: type === 'file' ? files[0] : value,
     });
+
+    // Read image files as data URLs
+    if (type === 'file') {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setImageData((prevState) => ({
+          ...prevState,
+          [name]: event.target.result,
+        }));
+      };
+      reader.readAsDataURL(files[0]);
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
-    // Handle form submission logic here
+
+    // Generate PDF
+    const doc = new jsPDF();
+
+    // Add title
+    doc.setFontSize(18);
+    doc.text('Freedom Fighters Pension Form', 20, 20);
+
+    // Add form data
+    doc.setFontSize(12);
+    let y = 30; // Starting Y position
+    for (const [key, value] of Object.entries(formData)) {
+      const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
+      doc.text(`${formattedKey}: ${value ? value : 'N/A'}`, 20, y);
+      y += 10; // Increase Y position for the next line
+    }
+
+    // Add images to PDF
+    const addImageToPDF = (imageData, yPosition, label) => {
+      if (imageData) {
+        doc.addImage(imageData, 'JPEG', 20, yPosition, 40, 40); // Adjust size as necessary
+        yPosition += 50; // Increase Y position after adding image
+      }
+      return yPosition;
+    };
+
+    y = addImageToPDF(imageData.aadharFile, y, 'Aadhar File');
+    y = addImageToPDF(imageData.pensionOrderFile, y, 'Pension Order File');
+    y = addImageToPDF(imageData.recentPhotoFile, y, 'Recent Photo');
+
+    // Save the PDF
+    doc.save('freedom_fighters_pension_form.pdf');
   };
 
   return (
@@ -192,7 +241,7 @@ function Form1() {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white font-semibold py-3 rounded-md shadow-lg hover:bg-blue-700 transition-all duration-300"
+            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-200"
           >
             Submit
           </button>
